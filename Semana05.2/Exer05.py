@@ -1,11 +1,13 @@
-class Cliente:
-    def __init__(self, nome):
+class Paciente:
+    def __init__(self, nome, idade, prioridade):
         self.nome = nome
+        self.idade = idade
+        self.prioridade = prioridade
         self.proximo = None
         self.anterior = None
 
-    def adicionar(self, nome):
-        novo = Cliente(nome)
+    def inserir(self, nome, idade, prioridade):
+        novo = Paciente(nome, idade, prioridade)
 
         ultimo = self.anterior
 
@@ -14,46 +16,84 @@ class Cliente:
         novo.proximo = self
         self.anterior = novo
 
-    def remover(self, nome):
+    def mostrar(self):
         atual = self
 
         while True:
-            if atual.nome == nome:
-                atual.anterior.proximo = atual.proximo
-                atual.proximo.anterior = atual.anterior
-                return
+            print(atual.nome, atual.idade, atual.prioridade)
 
             atual = atual.proximo
 
             if atual == self:
                 break
 
-    def passar_pizza(self, vezes):
+    def contar(self):
+        quantidade = 1
+        atual = self.proximo
+
+        while atual != self:
+            quantidade += 1
+            atual = atual.proximo
+
+        return quantidade
+
+    def remover(self, paciente):
+        paciente.anterior.proximo = paciente.proximo
+        paciente.proximo.anterior = paciente.anterior
+
+    def buscar_prioridade(self, prioridade):
         atual = self
 
-        for i in range(vezes):
-            print("Recebendo pizza:", atual.nome)
+        while True:
+            if atual.prioridade == prioridade:
+                return atual
+
             atual = atual.proximo
+
+            if atual == self:
+                return None
+
+    def atender(self):
+        quantidade = self.contar()
+
+        while quantidade > 0:
+            paciente = self.buscar_prioridade("emergencia")
+
+            if paciente is None:
+                paciente = self.buscar_prioridade("urgente")
+
+            if paciente is None:
+                paciente = self.buscar_prioridade("normal")
+
+            print("Atendendo:", paciente.nome)
+
+            proximo = paciente.proximo
+
+            self.remover(paciente)
+
+            quantidade -= 1
+
+            if quantidade > 0:
+                paciente = proximo
 
 
 def main():
-    cabeca = Cliente("Samuel")
+    cabeca = Paciente("Carlos", 35, "normal")
     cabeca.proximo = cabeca
     cabeca.anterior = cabeca
 
-    cabeca.adicionar("Pedro")
-    cabeca.adicionar("João")
-    cabeca.adicionar("Maria")
+    cabeca.inserir("Maria", 42, "urgente")
+    cabeca.inserir("João", 28, "normal")
+    cabeca.inserir("Ana", 55, "emergencia")
+    cabeca.inserir("Pedro", 31, "urgente")
 
-    print("Passagem da pizza:")
-    cabeca.passar_pizza(10)
+    print("Pacientes:")
+    cabeca.mostrar()
 
     print()
+    print("Atendimento:")
 
-    cabeca.remover("João")
-
-    print("Após João sair:")
-    cabeca.passar_pizza(10)
+    cabeca.atender()
 
 
 main()
