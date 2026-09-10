@@ -1,71 +1,59 @@
-import random
-
-
-class Guerreiro:
-    def __init__(self, guerreiro):
-        self.guerreiro = guerreiro
+class Cliente:
+    def __init__(self, nome):
+        self.nome = nome
         self.proximo = None
         self.anterior = None
 
-    def inserir_guerreiros(self, quantidade):
-        for i in range(2, quantidade + 1):
-            novo = Guerreiro("G" + str(i))
+    def adicionar(self, nome):
+        novo = Cliente(nome)
 
-            ultimo = self.anterior
+        ultimo = self.anterior
 
-            ultimo.proximo = novo
-            novo.anterior = ultimo
-            novo.proximo = self
-            self.anterior = novo
+        ultimo.proximo = novo
+        novo.anterior = ultimo
+        novo.proximo = self
+        self.anterior = novo
 
-    def contar(self):
-        quantidade = 1
-        atual = self.proximo
-
-        while atual != self:
-            quantidade += 1
-            atual = atual.proximo
-
-        return quantidade
-
-    def remover(self, guerreiro):
-        guerreiro.anterior.proximo = guerreiro.proximo
-        guerreiro.proximo.anterior = guerreiro.anterior
-
-    def roleta(self):
-        quantidade = self.contar()
+    def remover(self, nome):
         atual = self
 
-        while quantidade > 1:
-            posicao = random.randint(1, quantidade)
+        while True:
+            if atual.nome == nome:
+                atual.anterior.proximo = atual.proximo
+                atual.proximo.anterior = atual.anterior
+                return
 
-            for i in range(posicao - 1):
-                atual = atual.proximo
+            atual = atual.proximo
 
-            print("Eliminado:", atual.guerreiro)
+            if atual == self:
+                break
 
-            proximo = atual.proximo
+    def passar_pizza(self, vezes):
+        atual = self
 
-            self.remover(atual)
-
-            atual = proximo
-            quantidade -= 1
-
-        print("Sobrevivente:", atual.guerreiro)
+        for i in range(vezes):
+            print("Recebendo pizza:", atual.nome)
+            atual = atual.proximo
 
 
 def main():
-    quantidade = int(input("Quantidade de guerreiros: "))
+    cabeca = Cliente("Samuel")
+    cabeca.proximo = cabeca
+    cabeca.anterior = cabeca
 
-    if quantidade < 2:
-        print("Quantidade inválida.")
-    else:
-        cabeca = Guerreiro("G1")
-        cabeca.proximo = cabeca
-        cabeca.anterior = cabeca
+    cabeca.adicionar("Pedro")
+    cabeca.adicionar("João")
+    cabeca.adicionar("Maria")
 
-        cabeca.inserir_guerreiros(quantidade)
-        cabeca.roleta()
+    print("Passagem da pizza:")
+    cabeca.passar_pizza(10)
+
+    print()
+
+    cabeca.remover("João")
+
+    print("Após João sair:")
+    cabeca.passar_pizza(10)
 
 
 main()
